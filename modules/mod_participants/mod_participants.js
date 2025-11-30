@@ -13,7 +13,7 @@ const {server,broadcastMessage, wsEmitter
 const path = require('path');
 const moduleapi = require(path.join(global.BaseDir, 'module-api.js'));
 
-const {zosc,} = require(path.join(global.BaseDir, 'module-api.js'));
+const {zosc} = require(path.join(global.BaseDir, 'module-api.js'));
 
 
 const success = moduleapi.registerModule("1.0", exports, "participants", "Participants Module");
@@ -22,7 +22,7 @@ if (success != true) { return; }
 //  Register the web page that will display the participants list
 
 moduleapi.registerRoute("/participants", function(req, res, authInfo) {
-    return serveFile(__dirname + '/participants.html', res);
+    return moduleapi.serveFile(__dirname + '/participants.html', res);
 });
 
 
