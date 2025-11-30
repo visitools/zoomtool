@@ -1,0 +1,11 @@
+{
+    "WebserverPort":8086,
+    
+    "OSCserverIP":"127.0.0.1",
+    "OSCserverPortIn":9090,
+    "OSCserverPortOut":1234,
+  
+    "PassthroughMessages":false,
+    "PassthroughIP":"",
+    "PassthroughPort":1234
+}

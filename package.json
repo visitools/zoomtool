@@ -1,0 +1,27 @@
+{
+  "name": "zoomtool",
+  "version": "1.0.0",
+  "description": "Tools for Zoom",
+  "main": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "main": "node ./index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/node-osc": "^9.1.0",
+    "nodemon": "^3.1.11"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "node-osc": "^11.1.0",
+    "node-schedule": "^2.1.1",
+    "open": "^11.0.0",
+    "ws": "^8.18.3"
+  }
+}
