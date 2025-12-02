@@ -1,22 +1,13 @@
 // Module to keep track of participants and their status
 
-/*const main = require(path.join(global.BaseDir, 'index'));
-const { registerKeypress } = require(path.join(global.BaseDir, 'util_keys.js'));
-const {zosc,config} = require(path.join(global.BaseDir, 'index.js'));
-if (main.config.RollCall_Modules == true) { console.log("Module Participants loaded"); }
-
-const {server,broadcastMessage, wsEmitter
-    ,registerRoute,unregisterRoute
-    ,serveFile,publicPath
-    ,checkPermissions,rejectRequest} = require(path.join(global.BaseDir, 'server.js'));
-*/
 const path = require('path');
 const moduleapi = require(path.join(global.BaseDir, 'module-api.js'));
 
+// specific import of zosc to avoid the need to prefix it with "moduleapi." later in the code
 const {zosc} = require(path.join(global.BaseDir, 'module-api.js'));
 
 
-const success = moduleapi.registerModule("1.0", exports, "participants", "Participants Module");
+const success = moduleapi.registerModule("1.0", exports, "PARTICIPANTS", "Participants Module");
 if (success != true) { return; }
 
 //  Register the web page that will display the participants list
