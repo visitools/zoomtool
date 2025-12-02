@@ -274,6 +274,13 @@ function serveFile(path, res) {
         return send404(res, "404 Directory Traversal Attempt");
     }
     
+    // If serving JavaScript, set headers to prevent caching
+    if (fileType === 'text/javascript' && res && typeof res.setHeader === 'function') {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+    }
 
     fs.readFile(path, function(err, data) { //read file index.html in public folder
         if (err) {
