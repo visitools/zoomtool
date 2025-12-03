@@ -15,102 +15,71 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+    <style>
+        /* Status indicator styling */
+        #status-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+        }
+
+       
+        /* Hide status indicator in fullscreen mode */
+        *:fullscreen #status-indicator,
+        *:-webkit-full-screen #status-indicator,
+        *:-moz-full-screen #status-indicator,
+        *:-ms-fullscreen #status-indicator {
+            display: none;
+        }
+    </style>
+
     <script type="text/javascript">
     </script>
 </head>
 <body style="background: #212121;">
+
+<!-- Connection Status Indicator -->
+<div id="status-indicator" class="badge bg-secondary hidden" style="display: none;">Connecting...</div>
+
+<!-- Include WebSocket communication module -->
+<script src="/scripts/comms.js"></script>
 <script>
-    const LL_None = 0;
-    const LL_Sparse = 1;
-    const LL_Info = 6;
-    const LL_All = 9;
-
-    let LogLevel = LL_Sparse;
-    const LL_Dev = LogLevel + 1;
-
-    let isConnected = false;
+const kShortName = "PARTICIPANTS";
+const kModulePrefix = kShortName + ".";
 
 
-    let ShouldConnect = true;
-    let socket = null;
-
-    function connectWebSocket() {
-        if (ShouldConnect != true) return;
-
-        // Determine WebSocket URL based on current location
-        var wsProtocol = (window.location.protocol === 'https:') ? 'wss://' : 'ws://';
-        var wsURL = wsProtocol + window.location.host + '/'; // Use appropriate path
-
-        // Create a new WebSocket
-        socket = new WebSocket(wsURL);
-
-        // Connection opened
-        socket.addEventListener('open', function (event) {
-            isConnected = true;
-            if (LogLevel >= LL_Sparse) console.log('Connected to WebSocket');
-            // You can now send messages using socket.send('Your Message');
-        });
-
-        // Listen for messages
-        socket.addEventListener('message', function (event) {
-            if (LogLevel >= LL_Dev) console.log('Message from server:', event.data);
-            handleMessage(event);
-        });
-
-        // Handle any errors that occur.
-        socket.addEventListener('error', function (event) {
-            if (LogLevel >= LL_Sparse) console.error('WebSocket Error:');
-            isConnected = false;
-            socket.close(); // Ensure WebSocket is closed before trying to reconnect
-        });
-
-        // Listen for possible close
-        socket.addEventListener('close', function (event) {
-            if (LogLevel >= LL_Sparse) console.log('WebSocket connection closed:');
-            isConnected = false;
-            reconnectWebSocket();
-        });
-    }
-
-    let reconnectInterval = 1000; // Start with 1 second
-    const maxInterval = 30000; // Maximum interval of 30 seconds
-
-    function reconnectWebSocket() {
-        setTimeout(() => {
-            if (LogLevel >= LL_Sparse) console.log("Attempting to reconnect...");
-            connectWebSocket();
-            // Increase the interval for next reconnection attempt
-            reconnectInterval = Math.min(maxInterval, reconnectInterval * 2);
-        }, reconnectInterval);
-    }
-
-
-
-    function sendToServer(message) {
-        if (isConnected) {
-            socket.send(message);
-            return true;
-        } else {
-            return false;
+    // Set up connection status callbacks
+    onWebSocketConnected = function() {
+        const indicator = document.getElementById('status-indicator');
+        if (indicator) {
+            indicator.textContent = 'Connected';
+            indicator.className = 'badge bg-success';
         }
-    }
+    };
 
-    document.addEventListener('DOMContentLoaded', function() {
-        connectWebSocket();
-    });
-
-    window.addEventListener("beforeunload", () => {
-        ShouldConnect = false;
-        if (socket != null) {
-            socket.close();
+    onWebSocketDisconnected = function() {
+        const indicator = document.getElementById('status-indicator');
+        if (indicator) {
+            indicator.textContent = 'Disconnected';
+            indicator.className = 'badge bg-danger';
         }
-    });
+    };
 
+    onWebSocketError = function(event) {
+        const indicator = document.getElementById('status-indicator');
+        if (indicator) {
+            indicator.textContent = 'Error';
+            indicator.className = 'badge bg-warning';
+        }
+    };
 
-
-    function handleMessage(event) {
+    function handleZTMessage(event) {
         let str = event.data;
-        console.log("handleMessage:",str);
+        console.log("handleZTMessage:",str);
 
         let firstColonIndex = str.indexOf(':');
         let secondColonIndex = str.indexOf(':', firstColonIndex + 1);
@@ -138,7 +107,7 @@
        // if (cmd == "ClearLists") clearLists();
 
         if (parts.length > 0) {
-            if (cmd.startsWith('part')) handleParticipantData(str.substring(5));
+            if (cmd.startsWith(kModulePrefix)) handleParticipantData(str.substring(kModulePrefix.length + 1));
         }
     }
 
@@ -208,7 +177,7 @@
 
     function refreshList() {
         //clearLists();
-        socket.send("PARTICIPANTS.REFRESH");
+        sendToServer("PARTICIPANTS.REFRESH");
     }
 
 </script>
@@ -247,7 +216,7 @@ Participants
             line-height: 1;
             color: #5f5f5f;
          ">
-        N/A
+        &nbsp;
     </div>
 </div>
 <script>

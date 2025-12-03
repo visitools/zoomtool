@@ -37,15 +37,18 @@ moduleapi.zosc.on("OSCmessage",(msg) => {
         const audioState  = msg[10];
         const handState   = msg[11];
 
-        // Add or remove the participant from the list based on the online state
-        if (onlineState == "1") {
-            AddParticipant(userID, userName, userRole, videoState, audioState, handState);
-        } else if (onlineState == "0") {
-            RemoveParticipant(userID);
+        // Keeping participant details is disabled for now.  It's due to be updated.
+        if (false) {
+            // Add or remove the participant from the list based on the online state
+            if (onlineState == "1") {
+                AddParticipant(userID, userName, userRole, videoState, audioState, handState);
+            } else if (onlineState == "0") {
+                RemoveParticipant(userID);
+            }
         }
 
         // Broadcast the participant data to the web UI
-        moduleapi.broadcastMessage("part,"
+        moduleapi.broadcastMessage("PARTICIPANTS.,"
             + onlineCount+","+onlineState +","+userID+","+userRole+","+videoState+","+audioState+","+handState+","+userName);
     }
 
@@ -76,6 +79,7 @@ moduleapi.wsEmitter.on("message", handleParticipantWebMessage);
 //  Register keypresses to show the participants list and list the participants
 moduleapi.registerKeypress('p', () => {
     console.log("Participants:",GetParticipantList());
+    moduleapi.broadcastMessage("PARTICIPANTS.REFRESH");
  }, 'Show participants', 'Participants');
 
 
